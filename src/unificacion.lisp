@@ -7,6 +7,8 @@
 (load "utils.lisp")
 (load "sustitucion.lisp")
 
+
+; Unificacion cuando E1 o E2 o ambos son atomo
 (defun unificar_con_atomo (E1 E2)
     (cond   ((equal E1 E2) '())
             ((es_variable E1)   (if (contiene E2 E1)
@@ -19,6 +21,7 @@
     )    
 )
 
+; Unificacion cuando ni E1 ni E2 son atomo 
 (defun unificar_sin_atomo (E1 E2)
     (prog (F1 T1 F2 T2 Z1 G1 Z2 G2)
         (setf F1 (first E1)) (setf T1 (rest E1))
@@ -43,6 +46,7 @@
     )
 )
 
+; Algoritmo de unificacion
 (defun unificacion (E1 E2)
     (cond   ((es_atomo E1) (unificar_con_atomo E1 E2))
             ((es_atomo E2) (unificar_con_atomo E2 E1))
