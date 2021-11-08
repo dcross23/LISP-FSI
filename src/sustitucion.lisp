@@ -7,11 +7,17 @@
 (load "utils.lisp")
 
 ; Busca una sustitucion válida para el elemento "elto" en la lista de sustituciones "sustituciones". Si no lo encuentra
-;  en toda la lista, devuelve el propio elemento.
-(defun get_sustitucion (elto sustituciones)
+;  en toda la lista, devuelve el propio elemento. En caso de encontrar una sustitucion del tipo "variable/variable", busca
+;  a ver si la nueva variable tambien tiene una sustitución posible
+(defun get_sustitucion (elto sustituciones todas_sustituciones)
     (cond ((eq 0 (length sustituciones)) elto)
-        ((equal elto (second (first sustituciones))) (first (first sustituciones)))
-        (T (get_sustitucion elto (rest sustituciones)))
+        ((equal elto (second (first sustituciones))) 
+        	(if (es_variable (first (first sustituciones)))
+        		(get_sustitucion (first (first sustituciones)) todas_sustituciones todas_sustituciones) 
+        		(first (first sustituciones))
+        	)           
+        )
+        (T (get_sustitucion elto (rest sustituciones) todas_sustituciones))
     )
 )
 
@@ -25,14 +31,14 @@
                     (progn ()
                         (loop for x in elto do
                             (cond ((not (es_atomo x)) (setf resultado (append resultado (list (aplicacion sustituciones x)))))
-                                  ((es_variable x)    (setf resultado (append resultado (list (get_sustitucion x sustituciones)))))
+                                  ((es_variable x)    (setf resultado (append resultado (list (get_sustitucion x sustituciones sustituciones)))))
                                   (T                  (setf resultado (append resultado (list x))))
                             )  
                         )
                     )
                 )
 
-                ((es_variable elto) (setf resultado (append resultado (get_sustitucion elto sustituciones))))
+                ((es_variable elto) (setf resultado (append resultado (get_sustitucion elto sustituciones sustituciones))))
                 (T (setf resultado (append resultado elto)))            
         )
         (return resultado)

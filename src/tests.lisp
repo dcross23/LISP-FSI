@@ -85,9 +85,14 @@
 (write-line "------------------")
 (write-line "Tests get_sustitucion:")
 (write-line "------------------")
-(princ "  ") (write (test_func (get_sustitucion '(? x) '((A (? x)) (B (? y)))) 'A)) (terpri)
-(princ "  ") (write (test_func (get_sustitucion '(f (? x) (? y)) '((A (? x)) (W (f (? x) (? y))))) 'W)) (terpri)
-(princ "  ") (write (test_func (get_sustitucion '((? x) (? y)) '((A (? x)) (W (? y)))) '((? x) (? y)))) (terpri)
+(setf sustituciones '((A (? x)) (B (? y))) )
+(princ "  ") (write (test_func (get_sustitucion '(? x) sustituciones sustituciones) 'A)) (terpri)
+
+(setf sustituciones '((A (? x)) (W (f (? x) (? y)))) )
+(princ "  ") (write (test_func (get_sustitucion '(f (? x) (? y)) sustituciones sustituciones) 'W)) (terpri)
+
+(setf sustituciones '((A (? x)) (W (? y))) )
+(princ "  ") (write (test_func (get_sustitucion '((? x) (? y)) sustituciones sustituciones) '((? x) (? y)))) (terpri)
 (write-line "")
 
 
@@ -107,6 +112,21 @@
 (setf lsust '((A (? x)) (B (? y)) (C (? w)) (D (? z))) )
 (setf elto '((f (g (? y) (? x))) (? x) (g (? w)) (? r)) )
 (setf result '((f (g B A)) A (g C) (? r)) )
+(princ "  ") (write (test_func (aplicacion lsust elto) result )) (terpri)
+
+(setf lsust '( ((? x) (? y)) ))
+(setf elto   '((f (g (? y) (? x))) (? y)))
+(setf result '((f (g (? x) (? x))) (? x)))
+(princ "  ") (write (test_func (aplicacion lsust elto) result )) (terpri)
+
+(setf lsust '(((? x) (? y)) (A (? x)) ) )
+(setf elto   '((f (g (? y) (? x))) (? x)))
+(setf result '((f (g A A)) A))
+(princ "  ") (write (test_func (aplicacion lsust elto) result )) (terpri)
+
+(setf lsust '(((? x) (? y)) (A (? z)) ((? z) (? x))) )
+(setf elto   '((f (g (? y) (? x))) (? z)))
+(setf result '((f (g A A)) A))
 (princ "  ") (write (test_func (aplicacion lsust elto) result )) (terpri)
 (write-line "")
 
